@@ -1,23 +1,53 @@
 import React, { useState } from 'react';
 
 const Login = ({ onLogin }) => {
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const API_BASE_URL = 'http://localhost:8000';
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simple mock login
-    if (username && password) {
-      onLogin(username);
-    } else {
-      alert('Please enter username and password');
+    setError('');
+
+    if (!username || !password) {
+      setError('Please enter username and password');
+      return;
+    }
+
+    const endpoint = isRegister ? '/register' : '/login';
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (isRegister) {
+          alert('Registration successful! Please login.');
+          setIsRegister(false);
+          setPassword('');
+        } else {
+          onLogin(data);
+        }
+      } else {
+        setError(data.detail || 'Something went wrong');
+      }
+    } catch (err) {
+      setError('Could not connect to server');
     }
   };
 
   return (
     <div style={styles.container}>
-      <h2>Money Manager Login</h2>
+      <h2>{isRegister ? 'Create Account' : 'Money Manager Login'}</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
+        {error && <div style={styles.error}>{error}</div>}
         <div style={styles.inputGroup}>
           <label>Username</label>
           <input
@@ -36,7 +66,18 @@ const Login = ({ onLogin }) => {
             style={styles.input}
           />
         </div>
-        <button type="submit" style={styles.button}>Login</button>
+        <button type="submit" style={styles.button}>
+          {isRegister ? 'Register' : 'Login'}
+        </button>
+        <p style={styles.toggleText}>
+          {isRegister ? 'Already have an account?' : 'Need an account?'}
+          <span 
+            onClick={() => { setIsRegister(!isRegister); setError(''); }} 
+            style={styles.toggleLink}
+          >
+            {isRegister ? ' Login here' : ' Register here'}
+          </span>
+        </p>
       </form>
     </div>
   );
@@ -76,6 +117,22 @@ const styles = {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer'
+  },
+  error: {
+    color: 'red',
+    marginBottom: '10px',
+    fontSize: '14px',
+    textAlign: 'center'
+  },
+  toggleText: {
+    marginTop: '15px',
+    fontSize: '14px',
+    textAlign: 'center'
+  },
+  toggleLink: {
+    color: '#007bff',
+    cursor: 'pointer',
+    fontWeight: 'bold'
   }
 };
 

@@ -6,20 +6,21 @@ const API_BASE_URL = 'http://localhost:8000';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('income');
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       fetchTransactions();
     }
-  }, [user]);
+  }, [userId]);
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/transactions`);
+      const response = await fetch(`${API_BASE_URL}/transactions/${userId}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data.reverse()); // Show newest first
@@ -29,25 +30,14 @@ function App() {
     }
   };
 
-  const handleLogin = async (username) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
-      });
-      if (response.ok) {
-        setUser(username);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      // Fallback for demo if backend is not running
-      setUser(username);
-    }
+  const handleLogin = (userData) => {
+    setUser(userData.username);
+    setUserId(userData.id);
   };
 
   const handleLogout = () => {
     setUser(null);
+    setUserId(null);
     setTransactions([]);
   };
 
@@ -62,7 +52,7 @@ function App() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/transactions`, {
+      const response = await fetch(`${API_BASE_URL}/transactions/${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTransaction)
