@@ -5,6 +5,9 @@ const Login = ({ onLogin }) => {
   const APP_NAME = import.meta.env.VITE_APP_NAME || 'Money Manager';
 
   const [isRegister, setIsRegister] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
