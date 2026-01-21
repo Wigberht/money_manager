@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
+import { API_BASE_URL, APP_NAME } from './config';
 import './App.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const APP_NAME = import.meta.env.VITE_APP_NAME || 'Money Manager';
 
 function App() {
   const [user, setUser] = useState(null);

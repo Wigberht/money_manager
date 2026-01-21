@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
+import { API_BASE_URL, APP_NAME } from '../config';
 
 const Login = ({ onLogin }) => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  const APP_NAME = import.meta.env.VITE_APP_NAME || 'Money Manager';
 
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
