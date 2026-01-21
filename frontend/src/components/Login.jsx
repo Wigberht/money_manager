@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 
 const Login = ({ onLogin }) => {
-  const [isRegister, setIsRegister] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const APP_NAME = import.meta.env.VITE_APP_NAME || 'Money Manager';
 
-  const API_BASE_URL = 'http://localhost:8000';
+  const [isRegister, setIsRegister] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +43,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div style={styles.container}>
-      <h2>{isRegister ? 'Create Account' : 'Money Manager Login'}</h2>
+      <h2>{isRegister ? 'Create Account' : `${APP_NAME} Login`}</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
         {error && <div style={styles.error}>{error}</div>}
         <div style={styles.inputGroup}>

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import './App.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const APP_NAME = import.meta.env.VITE_APP_NAME || 'Money Manager';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -80,7 +81,7 @@ function App() {
   return (
     <div className="container">
       <header>
-        <h1>Money Manager</h1>
+        <h1>{APP_NAME}</h1>
         <div className="user-info">
           <span>Welcome, {user}!</span>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
