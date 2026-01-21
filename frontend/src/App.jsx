@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
+import ExpenseChart from './components/ExpenseChart';
 import { API_BASE_URL, APP_NAME } from './config';
 import './App.css';
 
@@ -10,6 +11,8 @@ function App() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('income');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'charts'
 
   useEffect(() => {
     if (userId) {
@@ -47,7 +50,8 @@ function App() {
     const newTransaction = {
       description,
       amount: parseFloat(amount),
-      type
+      type,
+      date
     };
 
     try {
@@ -62,6 +66,7 @@ function App() {
         setTransactions([savedTransaction, ...transactions]);
         setDescription('');
         setAmount('');
+        setDate(new Date().toISOString().split('T')[0]);
       }
     } catch (error) {
       console.error('Error adding transaction:', error);
@@ -86,48 +91,78 @@ function App() {
         </div>
       </header>
 
+      <nav className="navbar">
+        <button 
+          className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setCurrentView('dashboard')}
+        >
+          Add Transaction
+        </button>
+        <button 
+          className={`nav-item ${currentView === 'charts' ? 'active' : ''}`}
+          onClick={() => setCurrentView('charts')}
+        >
+          Charts
+        </button>
+      </nav>
+
       <section className="balance-card">
         <h2>Balance: ${totalBalance.toFixed(2)}</h2>
       </section>
 
-      <div className="main-content">
-        <section className="form-section">
-          <h3>Add Transaction</h3>
-          <form onSubmit={addTransaction} className="transaction-form">
-            <input
-              type="text"
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-            />
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-            <button type="submit">Add Transaction</button>
-          </form>
-        </section>
+      {currentView === 'dashboard' ? (
+        <div className="main-content">
+          <section className="form-section">
+            <h3>Add Transaction</h3>
+            <form onSubmit={addTransaction} className="transaction-form">
+              <input
+                type="text"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                placeholder="Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+              />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+              <select value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+              <button type="submit">Add Transaction</button>
+            </form>
+          </section>
 
-        <section className="list-section">
-          <h3>History</h3>
-          <ul className="transaction-list">
-            {transactions.map((t) => (
-              <li key={t.id} className={`transaction-item ${t.type}`}>
-                <span>{t.description}</span>
-                <span>{t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+          <section className="list-section">
+            <h3>History</h3>
+            <ul className="transaction-list">
+              {transactions.map((t) => (
+                <li key={t.id} className={`transaction-item ${t.type}`}>
+                  <div className="transaction-info">
+                    <span className="transaction-desc">{t.description}</span>
+                    <span className="transaction-date">{t.date}</span>
+                  </div>
+                  <span className="transaction-amount">
+                    {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      ) : (
+        <ExpenseChart transactions={transactions} />
+      )}
     </div>
   );
 }

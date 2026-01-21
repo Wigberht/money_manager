@@ -1,20 +1,33 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-import models, database
+import models, database, utils
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
 
 # Initialize database
 models.Base.metadata.create_all(bind=database.engine)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Run startup logic
+    db = database.SessionLocal()
+    try:
+        utils.populate_sample_data(db)
+    finally:
+        db.close()
+    yield
+    # Run shutdown logic (if any)
+
+app = FastAPI(lifespan=lifespan)
 
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "*"
+        "http://127.0.0.1:5173",
+        "https://money-manager-me9g.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -36,6 +49,7 @@ class TransactionCreate(BaseModel):
     description: str
     amount: float
     type: str
+    date: str
 
 class Transaction(TransactionCreate):
     id: int

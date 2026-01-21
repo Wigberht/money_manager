@@ -18,6 +18,7 @@ class Transaction(Base):
     description = Column(String)
     amount = Column(Float)
     type = Column(String) # 'income' or 'expense'
+    date = Column(String) # YYYY-MM-DD
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="transactions")

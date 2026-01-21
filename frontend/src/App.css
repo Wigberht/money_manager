@@ -41,6 +41,56 @@ header {
   text-align: center;
 }
 
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.nav-item {
+  padding: 10px 20px;
+  background-color: #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.nav-item.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.chart-container {
+  margin-top: 1rem;
+}
+
+.filter-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.month-dropdown {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.charts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -76,10 +126,29 @@ header {
 .transaction-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 10px;
   border-bottom: 1px solid #eee;
   margin-bottom: 8px;
   border-radius: 4px;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-desc {
+  font-weight: bold;
+}
+
+.transaction-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.transaction-amount {
+  font-weight: bold;
 }
 
 .transaction-item.income {
@@ -93,7 +162,7 @@ header {
 }
 
 @media (max-width: 768px) {
-  .main-content {
+  .main-content, .charts-grid {
     grid-template-columns: 1fr;
   }
 }
