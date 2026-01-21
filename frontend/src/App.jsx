@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import './App.css';
+
+const API_BASE_URL = 'http://localhost:8000';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -9,28 +11,72 @@ function App() {
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('income');
 
-  const handleLogin = (username) => {
-    setUser(username);
+  useEffect(() => {
+    if (user) {
+      fetchTransactions();
+    }
+  }, [user]);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/transactions`);
+      if (response.ok) {
+        const data = await response.json();
+        setTransactions(data.reverse()); // Show newest first
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const handleLogin = async (username) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      if (response.ok) {
+        setUser(username);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      // Fallback for demo if backend is not running
+      setUser(username);
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
+    setTransactions([]);
   };
 
-  const addTransaction = (e) => {
+  const addTransaction = async (e) => {
     e.preventDefault();
     if (!description || !amount) return;
 
     const newTransaction = {
-      id: Date.now(),
       description,
       amount: parseFloat(amount),
       type
     };
 
-    setTransactions([newTransaction, ...transactions]);
-    setDescription('');
-    setAmount('');
+    try {
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTransaction)
+      });
+
+      if (response.ok) {
+        const savedTransaction = await response.json();
+        setTransactions([savedTransaction, ...transactions]);
+        setDescription('');
+        setAmount('');
+      }
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+    }
   };
 
   if (!user) {
